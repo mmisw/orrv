@@ -1,0 +1,18 @@
+[
+    {
+        "uri": "http://mmisw.org/ont/mx/featuretype",
+        "name": "Feature Types and Representations Extended",
+        "author": "John Graybeal (based on NODC work)",
+        "version": "20131010T221810"
+    }, {
+        "uri": "http://mmisw.org/ont/ioos/passive_acoustic_metadata",
+        "name": "Metadata Conventions for IOOS Passive Acoustic Recordings (v1.0)",
+        "author": "Shane Guan and Hassan Moustahfid",
+        "version": "20130926T174419"
+    }, {
+        "uri": "http://mmisw.org/ont/mmi/device",
+        "name": "MMI Device Ontology",
+        "author": "MMI Device Ontology Team",
+        "version": "20101005T221039"
+    }
+]

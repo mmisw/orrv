@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" ng-app="orrApp">
+<head>
+  <meta charset="utf-8">
+  <title>orrng</title>
+  <link rel="shortcut icon" href="img/favicon.png">
+  <link rel="stylesheet" href="vendor/bootstrap/bootstrap.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="vendor/ng-grid/ng-grid.css" />
+  <link rel="stylesheet" href="css/app.css"/>
+
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+<body>
+  <div>
+    <a href="#/"><img src="img/orrlogo50.png" style="vertical-align: baseline"></a>
+    <span style="color: #edf6fa"> orrv <span app-version></span> </span>
+  </div>
+  <div class="status" ng-show="works.any()">
+      <div class="loading" ng-bind="works.any()"></div>
+  </div>
+
+  <div ng-view></div>
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+  <!-- In production use:
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>  -->
+  <script src="vendor/angular/angular.js"></script>
+  <script src="vendor/angular/angular-route.js"></script>
+  <script src="vendor/angular/angular-sanitize.min.js"></script>
+  <script src="vendor/ng-grid/ng-grid-2.0.7.min.js"></script>
+  <script src="vendor/underscore/underscore-min.js"></script>
+
+  <script src="js/app.js"></script>
+  <script src="js/services.js"></script>
+  <script src="js/controllers.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/directives.js"></script>
+  <script src="js/util.js"></script>
+</body>
+</html>
