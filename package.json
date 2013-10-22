@@ -1,6 +1,6 @@
 {
-  "name": "orrng",
-  "description": "orrng",
+  "name": "orrv",
+  "description": "orrv",
   "devDependencies": {
     "phantomjs": "*",
     "karma": "~0.10.2",
