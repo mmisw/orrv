@@ -3,8 +3,8 @@
     {{uri}} <a class="icon-external-link" target="_blank" href="{{uri}}"></a>
 </div>
 
-<h3>Predicates associated to this URI as subject: </h3>
-<table class="uri" ng-show="subjectData.rows.length > 0">
+<h3>Predicates associated to this URI as subject: {{subjectData.size}}</h3>
+<table class="uri" ng-show="subjectData.size > 0">
     <thead>
     <tr>
         <th ng-repeat="name in subjectData.names">
@@ -15,15 +15,26 @@
     <tbody>
     <tr ng-repeat="row in subjectData.rows">
         <td ng-repeat="value in row">
-            <!--{{value}}-->
             <div ng-bind-html="value"></div>
         </td>
     </tr>
     </tbody>
 </table>
-<div ng-show="subjectData.rows.length == 0">(no triples having this URI as subject were found)</div>
 
 <br />
+
+<h3>All subjects in the graph identified by this URI: {{subjectsInGraph.size}}</h3>
+<table class="uri" ng-show="subjectsInGraph.size > 0">
+    <tbody>
+    <tr ng-repeat="row in subjectsInGraph.rows">
+        <td ng-repeat="value in row">
+            <div ng-bind-html="value"></div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<!--<br />
 
 <h3>All triples in the graph identified by this URI:</h3>
 <table class="uri" ng-show="graphData.rows.length > 0">
@@ -37,11 +48,11 @@
     <tbody>
     <tr ng-repeat="row in graphData.rows">
         <td ng-repeat="value in row">
-            <!--{{value}}-->
+            &lt;!&ndash;{{value}}&ndash;&gt;
             <div ng-bind-html="value"></div>
         </td>
     </tr>
     </tbody>
 </table>
-<div ng-show="graphData.rows.length == 0">(no triples found)</div>
+<div ng-show="graphData.rows.length == 0">(no triples found)</div>-->
 

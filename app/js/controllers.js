@@ -62,12 +62,13 @@ angular.module('orrApp.controllers', [])
             $scope.uri = $routeParams.uri;
 
             getSubjectData($scope, $http);
-            getGraphData($scope, $http);
+            getSubjectsInGraph($scope, $http);
+            //getGraphData($scope, $http);
         }])
     ;
 
 function getSubjectData($scope, $http) {
-    $scope.subjectData = {names: [''], rows: []};
+    $scope.subjectData = {size: 0, names: [''], rows: []};
 
     var uri = $scope.uri;
 
@@ -91,6 +92,7 @@ function getSubjectData($scope, $http) {
             var rows = data.values;
 
             $scope.subjectData.names = names;
+            $scope.subjectData.size  = rows.length;
 
             if (rows.length === 0) {
                 $scope.works.remove(workId);
@@ -99,8 +101,8 @@ function getSubjectData($scope, $http) {
             var predicates = {};
 
             _.each(rows, function(row) {
-                var predicate = row[0].replace(/^<(.*)>$/, '$1');
-                var value = row[1].replace(/^"(.*)"$/, '$1');
+                var predicate = row[0];
+                var value     = row[1].replace(/^"(.*)"$/, '$1');
 
                 if (!predicates.hasOwnProperty(predicate)) {
                     predicates[predicate] = [];
@@ -118,8 +120,14 @@ function getSubjectData($scope, $http) {
                 var values = predicates[predicate];
 
                 _.each(values, function(value, jj) {
-                    value = value.replace(/^<(.*)>$/, '$1');
-                    value = vutil.mklinks4text(values[jj]);
+                    value = values[jj];
+                    if (/^<([^>]*)>$/.test(value)) {
+                        // it is an uri.
+                        value = vutil.mklinks4uri(value, true);
+                    }
+                    else {
+                        value = vutil.mklinks4text(value);
+                    }
                     values[jj] = value;
                 });
 
@@ -135,7 +143,8 @@ function getSubjectData($scope, $http) {
 
                     res_value += '\n</ul>';
                 }
-                predicate = vutil.mklinks4uri(predicate);
+                predicate = vutil.mklinks4uri(predicate, true);
+                predicate = '<span stype="white-space:nowrap;">' +predicate+ '</span>';
                 res_rows.push([predicate, res_value]);
             }
 
@@ -155,6 +164,77 @@ function getSubjectData($scope, $http) {
                         var cont = $scope.works.has(workId);
                         if (!cont) {
                             console.log("getSubjectData: rendering canceled.");
+                        }
+                        return cont;
+                    }
+                }
+            );
+        })
+    ;
+}
+
+function getSubjectsInGraph($scope, $http) {
+    $scope.subjectsInGraph = {size: 0, rows: []};
+
+    var uri = $scope.uri;
+
+    var query = 'select distinct ?subject\n' +
+        'from <' + uri + '>\n' +
+        'where { ?subject ?predicate ?value. }\n' +
+        'order by ?subject';
+
+    //console.log("making query: " + query);
+    var workId = $scope.works.add("querying for all subjects in graph");
+
+    var cols = 2;   // number of subjects per row
+
+    $http.get('http://mmisw.org/sparql', {params: {query: query}})
+        .success(function (data, status, headers, config) {
+
+            $scope.works.update(workId, "preparing display");
+
+            var rows = data.values;
+
+            $scope.subjectsInGraph.size = rows.length;
+
+            if (rows.length == 0) {
+                $scope.works.remove(workId);
+                return;
+            }
+
+            var res_rows = [];
+            var res_row = [];
+            _.each(rows, function(row) {
+                var subject = vutil.mklinks4uri(row[0], true);
+                res_row.push(subject);
+
+                if (res_row.length == cols) {
+                    res_rows.push(res_row);
+                    res_row = [];
+                }
+            });
+            if (res_row.length > 0) {
+                res_rows.push(res_row);
+            }
+
+            //console.log("getSubjectsInGraph: rows to update: " + res_rows.length);
+            $scope.works.update(workId, "rendering graph subjects" + " (" +rows.length+ ")");
+
+            var start = new Date().getTime();
+            $scope.subjectsInGraph.rows = [];
+            vutil.updateModelArray($scope.subjectsInGraph.rows, res_rows,
+                function(done) {
+                    if (done) {
+                        $scope.works.remove(workId);
+                        $scope.$parent.$digest();
+                        console.log("getSubjectsInGraph: rendered." + " (" +((new Date().getTime()) - start)+ ")");
+                        return true;
+                    }
+                    else {
+                        $scope.$digest();
+                        var cont = $scope.works.has(workId);
+                        if (!cont) {
+                            console.log("getSubjectsInGraph: rendering canceled.");
                         }
                         return cont;
                     }

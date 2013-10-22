@@ -11,9 +11,24 @@ var vutil = (function () {
         return str;
     }
 
-    function mklinks4uri(url) {
-        return '<a href="#/uri/' + url + '">' + url + '</a> '
-            + '<a class="icon-external-link" target="_blank" title="open directly in a new window" href="' + url + '"></a>'
+    function mklinks4uri(uri, possibleBrackets) {
+        var pre = "";
+        var post = "";
+        if (possibleBrackets !== undefined && possibleBrackets) {
+            var m = uri.match(/^(<)?([^>]*)(>)?$/);
+            pre  = _.escape(m[1]);
+            uri  = m[2];
+            post = _.escape(m[3]);
+        }
+        var link = '<a href="#/uri/' + uri + '">' + uri + '</a> '
+            + '<a class="icon-external-link" target="_blank" title="open directly in a new window" href="' + uri + '"></a>'
+
+        //console.log("mklinks4uri:" +pre + "|" + link + "|" +post);
+        return pre + link + post;
+    }
+
+    function mklinks4uriNoBrackets(uri) {
+        return mklinks4uri(uri);
     }
 
     function mklinks4text(str) {
@@ -21,7 +36,7 @@ var vutil = (function () {
         str = _.escape(str);
         // then, add our re-formatting
         str = n2br(str);
-        str = str.replace(uriRegex, mklinks4uri);
+        str = str.replace(uriRegex, mklinks4uriNoBrackets);
         return str;
     }
 
