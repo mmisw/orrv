@@ -126,26 +126,22 @@ function getSubjectData($scope, $http) {
                         value = vutil.mklinks4uri(value, true);
                     }
                     else {
-                        value = vutil.mklinks4text(value);
+                        // string with language tag?
+                        var m = value.match(/^("[^"]+")(@[A-Za-z\-]+)$/);
+                        if (m) {
+                            // http://stackoverflow.com/questions/7885096/how-do-i-decode-a-string-with-escaped-unicode
+                            value = '"' + decodeURIComponent(JSON.parse(m[1])) + '"' + m[2];
+                        }
+                        else {
+                            value = vutil.mklinks4text(value);
+                        }
                     }
                     values[jj] = value;
                 });
 
-                var res_value;
-                if (values.length == 1) {
-                    res_value = values[0];
-                }
-                else {
-                    res_value = '<ul>';
-                    _.each(values, function(value) {
-                        res_value += '\n<li>' + value + '</li>';
-                    });
-
-                    res_value += '\n</ul>';
-                }
                 predicate = vutil.mklinks4uri(predicate, true);
                 predicate = '<span stype="white-space:nowrap;">' +predicate+ '</span>';
-                res_rows.push([predicate, res_value]);
+                res_rows.push([predicate, values]);
             }
 
             $scope.works.update(workId, "rendering subject data" + " (" +res_rows.length+ ")");

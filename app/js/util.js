@@ -21,7 +21,7 @@ var vutil = (function () {
             post = _.escape(m[3]);
         }
         var link = '<a href="#/uri/' + uri + '">' + uri + '</a> '
-            + '<a class="icon-external-link" target="_blank" title="open directly in a new window" href="' + uri + '"></a>'
+            + '<a class="icon-external-link" target="_blank" title="open directly in a new window" href="' + uri + '"></a>';
 
         //console.log("mklinks4uri:" +pre + "|" + link + "|" +post);
         return pre + link + post;

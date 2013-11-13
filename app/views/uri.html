@@ -14,8 +14,20 @@
     </thead>
     <tbody>
     <tr ng-repeat="row in subjectData.rows">
-        <td ng-repeat="value in row">
-            <div ng-bind-html="value"></div>
+        <td>
+            <div ng-bind-html="row[0]"></div>
+        </td>
+        <td>
+            <div ng-if="row[1].length > 1">
+                <ul>
+                    <li ng-repeat="c in row[1]">
+                        <span ng-bind-html="c"></span>
+                    </li>
+                </ul>
+            </div>
+            <div ng-if="row[1].length == 1">
+                <span ng-bind-html="row[1][0]"></span>
+            </div>
         </td>
     </tr>
     </tbody>
