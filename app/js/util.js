@@ -3,7 +3,7 @@
 /* utilities */
 
 var vutil = (function () {
-    var uriRegex = /\b(https?:\/\/[0-9A-Za-z-\.\/@:%_\+~#=\?]+\b)/g;
+    var uriRegex = /\b(https?:\/\/[0-9A-Za-z-\.\/@:%_\+~#=\?\(\)]+\b)/g;
 
     function n2br(str) {
         str = str.replace(/\\n/g, "\n");
