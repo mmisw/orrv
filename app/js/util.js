@@ -3,7 +3,7 @@
 /* utilities */
 
 var vutil = (function () {
-    var uriRegex = /\b(https?:\/\/[0-9A-Za-z-\.\/@:%_\+~#=\?\(\)]+\b)/g;
+    var uriRegex = /\b(https?:\/\/[0-9A-Za-z-\.\/&@:%_\+~#=\?\(\)]+\b)/g;
 
     function n2br(str) {
         str = str.replace(/\\n/g, "\n");
@@ -34,6 +34,8 @@ var vutil = (function () {
     function mklinks4text(str) {
         // first, escape original text
         str = _.escape(str);
+        // but restore any '&' for the links processing below:
+        str = str.replace(/&amp;/g, "&");
         // then, add our re-formatting
         str = n2br(str);
         str = str.replace(uriRegex, mklinks4uriNoBrackets);
