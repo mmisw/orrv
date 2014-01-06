@@ -28,9 +28,8 @@ angular.module('orrApp.controllers', [])
             ], multiSelect: false, rowHeight: 26        // 30 by default
             , enablePinning: false, showColumnMenu: true, showFilter: true, sortInfo: { fields: ['version'], directions: ['desc'] }, showGroupPanel: true, showFooter: true
 
-            //,enableCellEditOnFocus: true
+            , enableHighlighting: true
             , enableCellSelection: false
-            //,enableCellEdit:        true
             , enableRowSelection: false
         };
 
