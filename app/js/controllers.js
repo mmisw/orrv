@@ -23,14 +23,25 @@ angular.module('orrApp.controllers', [])
         $scope.gridOptions = {
             data: 'mainList', columnDefs: [
 
+                {field: 'authority', displayName: 'Org', width: "5%"
+                },
                 {field: 'uri', displayName: 'URI', width: "30%", cellTemplate: mklinksCellTemplate
                 },
                 {field: 'name', displayName: 'Name', width: "***", enableCellEdit: false, cellTemplate: mklinksCellTemplate
                 },
-                {field: 'author', displayName: 'Author', width: "**", enableCellEdit: false},
-                {field: 'version', displayName: 'Version', width: "*", enableCellEdit: false}
-            ], multiSelect: false, rowHeight: 26        // 30 by default
-            , enablePinning: false, showColumnMenu: true, showFilter: true, sortInfo: { fields: ['version'], directions: ['desc'] }, showGroupPanel: true, showFooter: true
+                {field: 'author', displayName: 'Author', width: "**", enableCellEdit: false
+                },
+                {field: 'version', displayName: 'Version', width: "*", enableCellEdit: false
+                }
+            ]
+            , multiSelect: false
+            , rowHeight: 26        // 30 by default
+            , enablePinning: false
+            , showColumnMenu: true
+            , showFilter: true
+            , sortInfo: { fields: ['version'], directions: ['desc'] }
+            , showGroupPanel: true
+            , showFooter: true
 
             , enableHighlighting:    true
             , enableCellSelection:   false
@@ -48,11 +59,12 @@ angular.module('orrApp.controllers', [])
         $http.get('http://mmisw.org/ont/?listonts') // 'data/onts.json'
             .success(function (data, status, headers, config) {
                 console.log("MainCtrl: got data: " + data.length + " elems");
-                // only show non-testing entries:
-                var notTesting = _.filter(data, function(e) { return e.version_status != "testing"});
-                console.log("MainCtrl: notTesting: " + notTesting.length + " elems");
-                OrrModel.setOntList(notTesting);
-                $scope.mainList = notTesting;
+                // only show non-internal and non-testing entries:
+                var visible = _.filter(data, function(e) {
+                    return e.internal != "true" && e.version_status != "testing"});
+                console.log("MainCtrl: visible: " + visible.length + " elems");
+                OrrModel.setOntList(visible);
+                $scope.mainList = visible;
                 OrrModel.works.remove(workId);
             });
 
