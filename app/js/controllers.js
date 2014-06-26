@@ -43,8 +43,11 @@ angular.module('orrApp.controllers', [])
         $http.get('http://mmisw.org/ont/?listonts') // 'data/onts.json'
             .success(function (data, status, headers, config) {
                 console.log("MainCtrl: got data: " + data.length + " elems");
-                OrrModel.setOntList(data);
-                $scope.mainList = data;
+                // only show non-testing entries:
+                var notTesting = _.filter(data, function(e) { return e.version_status != "testing"});
+                console.log("MainCtrl: notTesting: " + notTesting.length + " elems");
+                OrrModel.setOntList(notTesting);
+                $scope.mainList = notTesting;
                 OrrModel.works.remove(workId);
             });
 
