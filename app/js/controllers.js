@@ -4,15 +4,16 @@
 
 angular.module('orrApp.controllers', [])
 
-    .controller('MainCtrl', ['$scope', '$http', 'OrrModel',
-        function ($scope, $http, OrrModel) {
+    .controller('MainCtrl', ['$scope', '$routeParams', '$http', 'OrrModel',
+        function ($scope, $routeParams, $http, OrrModel) {
 
         OrrModel.works.removeAll();
 
+        $scope.so = $routeParams.so;
         $scope.mainList = OrrModel.getOntList();
 
         $scope.filterOptions = {
-            filterText: ''
+            filterText: $scope.so
         };
 
         var mklinksCellTemplate =

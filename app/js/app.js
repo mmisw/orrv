@@ -18,6 +18,10 @@ angular.module('orrApp', [
                 templateUrl: 'views/main.html',
                 controller: 'MainCtrl'})
 
+            .when('/so/:so', {
+                templateUrl: 'views/main.html',
+                controller: 'MainCtrl'})
+
             .when('/uri/:uri*', {
                 templateUrl: 'views/uri.html',
                 controller: 'UriCtrl'
