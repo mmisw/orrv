@@ -11,6 +11,10 @@ angular.module('orrApp.controllers', [])
 
         $scope.mainList = OrrModel.getOntList();
 
+        $scope.filterOptions = {
+            filterText: ''
+        };
+
         var mklinksCellTemplate =
             '<div class="ngCellText">' +
                 '<span ng-bind-html="row.entity[col.field] | mklinks"></span>'
@@ -28,9 +32,10 @@ angular.module('orrApp.controllers', [])
             ], multiSelect: false, rowHeight: 26        // 30 by default
             , enablePinning: false, showColumnMenu: true, showFilter: true, sortInfo: { fields: ['version'], directions: ['desc'] }, showGroupPanel: true, showFooter: true
 
-            , enableHighlighting: true
-            , enableCellSelection: false
-            , enableRowSelection: false
+            , enableHighlighting:    true
+            , enableCellSelection:   false
+            , enableRowSelection:    false
+            , filterOptions:	     $scope.filterOptions
         };
 
         if ($scope.mainList.length > 0) {
