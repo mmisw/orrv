@@ -11,12 +11,17 @@ angular.module('orrApp.uri.controller', ['trNgGrid'])
             $scope.uri = $routeParams.uri;
 
             $scope.subjectList = [];
+
+            $scope.instances = [];
             $scope.objectList = [];
+
+            $scope.subjectsInGraph = [];
+            $scope.triplesInGraph = [];
 
             getSubjectData($scope, dataService);
             getObjectData($scope, dataService);
-            getSubjectsInGraph($scope, dataService);
-            //getGraphData($scope, $http);
+            //getSubjectsInGraph($scope, dataService);
+            getTriplesInGraph($scope, dataService);
         }])
     ;
 
@@ -24,25 +29,37 @@ function getSubjectData($scope, dataService) {
     var uri = $scope.uri;
 
     var workId = $scope.works.add("making subject query");
+    var htmlify = true;
     var aggregatePredicates = true;
-    dataService.getSubjectData(uri, {htmlify: true, aggregatePredicates: aggregatePredicates},
-        {
-        gotSubjectData: function(result) {
-            //console.log("gotSubjectData: ", result);
-            //$scope.works.update(workId, "rendering subject data" + " (" +result.length+ ")");
+
+    dataService.getSubjectData(uri, {
+        gotSubjectData: function(predicates) {
+            //console.log("gotSubjectData: ", predicates);
+            var newPredicates = {}; // with htmlified or escaped uri's and values
+            _.each(predicates, function(values, predicate) {
+                var procPred = htmlify ? vutil.htmlifyUri(predicate) : _.escape(predicate);
+                newPredicates[procPred] = _.map(values, function(value) {
+                    return htmlify ? vutil.htmlifyObject(value) : _.escape(value);
+                });
+            });
+
+            var result = [];
             if (aggregatePredicates) {
-                result = _.map(result, function(e) {
-                    var predicate = e.predicate;
-                    var values    = e.values;
+                result = _.map(newPredicates, function(values, predicate) {
                     if (values.length == 1) {
                         return {predicate: predicate, value: values[0]};
                     }
                     else {
-                        var lis = _.map(values, function(v) {
-                           return '<li>' + v + '</li>';
-                        });
+                        var lis = _.map(values, function(value) { return '<li>' + value + '</li>'; });
                         return {predicate: predicate, value: '<ul>' + lis.join('') + '</ul>'};
                     }
+                });
+            }
+            else {
+                _.each(newPredicates, function(values, predicate) {
+                    _.each(values, function(value) {
+                        result.push({predicate: predicate, value: value});
+                    });
                 });
             }
             $scope.subjectList = result;
@@ -55,11 +72,52 @@ function getObjectData($scope, dataService) {
     var uri = $scope.uri;
 
     var workId = $scope.works.add("making object query");
-    dataService.getObjectData(uri,
-        {htmlify: true}, {
-        gotObjectData: function(result) {
-            //console.log("gotObjectData: ", result);
-            $scope.works.update(workId, "rendering object data" + " (" +result.length+ ")");
+    var htmlify = true;
+    var aggregatePredicates = false; // false because a class with many instances will make a very big single row.
+
+    var rdfTypeUri = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
+
+    dataService.getObjectData(uri, {
+        gotObjectData: function(predicates) {
+            //console.log("gotObjectData: ", predicates);
+
+            if (_.has(predicates, rdfTypeUri)) {
+                // extract the instances
+                $scope.instances = _.map(predicates[rdfTypeUri], function(subject) {
+                    var htmlSubject = htmlify ? vutil.htmlifyUri(subject) : _.escape(subject);
+                    return {subject: htmlSubject};
+                });
+                predicates = _.omit(predicates, rdfTypeUri);
+            }
+
+            var newPredicates = {}; // with htmlified or escaped uri's and subjects
+
+            _.each(predicates, function(subjects, predicate) {
+                var procPred = htmlify ? vutil.htmlifyUri(predicate) : _.escape(predicate);
+                newPredicates[procPred] = _.map(subjects, function(subject) {
+                    return htmlify ? vutil.htmlifyUri(subject) : _.escape(subject);
+                });
+            });
+
+            var result = [];
+            if (aggregatePredicates) {
+                result = _.map(newPredicates, function(subjects, predicate) {
+                    if (subjects.length == 1) {
+                        return {predicate: predicate, subject: subjects[0]};
+                    }
+                    else {
+                        var lis = _.map(subjects, function(subject) { return '<li>' + subject + '</li>'; });
+                        return {predicate: predicate, subject: '<ul>' + lis.join('') + '</ul>'};
+                    }
+                });
+            }
+            else {
+                _.each(newPredicates, function(subjects, predicate) {
+                    _.each(subjects, function(subject) {
+                        result.push({predicate: predicate, subject: subject});
+                    });
+                });
+            }
             $scope.objectList = result;
             $scope.works.remove(workId);
         }
@@ -67,38 +125,26 @@ function getObjectData($scope, dataService) {
 }
 
 function getSubjectsInGraph($scope, dataService) {
-    $scope.subjectsInGraph = {size: 0, rows: []};
-
     var uri = $scope.uri;
 
     //console.log("making query: " + query);
     var workId = $scope.works.add("querying for all subjects in graph");
+    var htmlify = true;
 
-    dataService.getSubjectsInGraph(uri, {}, {
-        gotSubjectsInGraph: function(data) {
-
+    dataService.getSubjectsInGraph(uri, {
+        gotSubjectsInGraph: function(subjects) {
             $scope.works.update(workId, "preparing display");
+            //console.log("getSubjectsInGraph: subjects=", subjects);
 
-            var rows = data.values;
-            //console.log("getSubjectsInGraph: rows: ", rows);
-
-            $scope.subjectsInGraph.size = rows.length;
-
-            if (rows.length == 0) {
-                $scope.works.remove(workId);
-                return;
-            }
-
-            var res_rows = [];
-            _.each(rows, function(row) {
-                var subject = vutil.mklinks4uri(row[0], true);
-                res_rows.push(subject);
+            var newSubjects = _.map(subjects, function(subject) {
+                return htmlify ? vutil.htmlifyUri(subject) : _.escape(subject);
             });
+            //console.log("getSubjectsInGraph: newSubjects=", newSubjects);
 
-            $scope.works.update(workId, "rendering graph subjects" + " (" +rows.length+ ")");
+            $scope.works.update(workId, "rendering graph subjects" + " (" +subjects.length+ ")");
 
-            $scope.subjectsInGraph.rows = [];
-            vutil.updateModelArray($scope.subjectsInGraph.rows, res_rows,
+            $scope.subjectsInGraph = [];
+            vutil.updateModelArray($scope.subjectsInGraph, newSubjects,
                 function(done) {
                     if (done) {
                         $scope.works.remove(workId);
@@ -116,123 +162,58 @@ function getSubjectsInGraph($scope, dataService) {
                     }
                 }
             );
-        }});
+        }
+    });
 }
 
-function getGraphData($scope, $http) {
-    $scope.graphData = {names: [''], rows: []};
-
+function getTriplesInGraph($scope, dataService) {
     var uri = $scope.uri;
-
-    var query = 'select distinct ?subject ?predicate ?value\n' +
-        'from <' + uri + '>\n' +
-        'where { ?subject ?predicate ?value.\n' +
-        '        filter ( ?subject != <' + uri + '> ) .' +  // exclude the uri itself as subject
-        '}';
 
     //console.log("making query: " + query);
     var workId = $scope.works.add("querying for all triples in graph");
+    var htmlify = true;
 
-    $http.get('http://mmisw.org/sparql', {params: {query: query}})
-        .success(function (data, status, headers, config) {
-
-            //console.log("getGraphData: got response. status= " + status);
-            //console.log("data = " + JSON.stringify(data));
+    dataService.getTriplesInGraph(uri, {
+        gotTriplesInGraph: function(triples) {
+            //console.log("gotGraphData: triples= ", triples);
 
             $scope.works.update(workId, "preparing display");
 
-            var names = data.names;
-            var rows = data.values;
+            var newTriples = _.map(triples, function(triple) {
+                var subject   = triple[0];
+                var predicate = triple[1];
+                var object    = triple[2];
 
-            $scope.graphData.names = names;
+                subject   = htmlify ? vutil.htmlifyUri(subject)   : _.escape(subject);
+                predicate = htmlify ? vutil.htmlifyUri(predicate) : _.escape(predicate);
+                object    = htmlify ? vutil.htmlifyObject(object) : _.escape(object);
 
-            if (rows.length == 0) {
-                $scope.works.remove(workId);
-                return;
-            }
-
-            var subjects = {};
-
-            _.each(rows, function(row) {
-                var subject = row[0].replace(/^<(.*)>$/, '$1');
-                var predicate = row[1].replace(/^<(.*)>$/, '$1');
-                var value = row[2].replace(/^"(.*)"$/, '$1');
-
-                if (!subjects.hasOwnProperty(subject)) {
-                    // new subject
-                    subjects[subject] = {};
-                }
-
-                if (!subjects[subject].hasOwnProperty(predicate)) {
-                    // new predicate
-                    subjects[subject][predicate] = [];
-                }
-
-                subjects[subject][predicate].push(value);
+                return {subject: subject, predicate: predicate, object: object};
             });
+            //console.log("gotGraphData: newTriples=", newTriples);
 
-            //console.log("getGraphData: subjects assigned: " + _.size(subjects));
+            $scope.works.update(workId, "rendering graph triples" + " (" +newTriples.length+ ")");
 
-            var res_rows = [];
-            for (var subject in subjects) {
-                if (!subjects.hasOwnProperty(subject)) {
-                    continue;
-                }
-
-                for (var predicate in subjects[subject]) {
-                    if (!subjects[subject].hasOwnProperty(predicate)) {
-                        continue;
-                    }
-
-                    var values = subjects[subject][predicate];
-
-                    _.each(values, function(value, jj) {
-                        value = value.replace(/^<(.*)>$/, '$1');
-                        value = vutil.mklinks4text(value);
-                        values[jj] = value;
-                    });
-
-                    var res_value;
-                    if (values.length == 1) {
-                        res_value = values[0];
-                    }
-                    else {
-                        res_value = '<ul>';
-                        _.each(values, function(value) {
-                            res_value += '\n<li>' + value + '</li>';
-                        });
-
-                        res_value += '\n</ul>';
-                    }
-                    res_rows.push([vutil.mklinks4uri(subject),
-                        vutil.mklinks4uri(predicate),
-                        res_value]);
-                }
-            }
-            //console.log("getGraphData: rows to update: " + res_rows.length);
-            $scope.works.update(workId, "rendering triples in graph" + " (" +res_rows.length+ ")");
-
-            var start = new Date().getTime();
-            $scope.graphData.rows = [];
-            vutil.updateModelArray($scope.graphData.rows, res_rows,
+            $scope.triplesInGraph = [];
+            vutil.updateModelArray($scope.triplesInGraph, newTriples,
                 function(done) {
                     if (done) {
                         $scope.works.remove(workId);
                         $scope.$parent.$digest();
-                        console.log("getGraphData: rendered." + " (" +((new Date().getTime()) - start)+ ")");
+                        console.log("getTriplesInGraph: rendered.");
                         return true;
                     }
                     else {
                         $scope.$digest();
                         var cont = $scope.works.has(workId);
                         if (!cont) {
-                            console.log("getGraphData: rendering canceled.");
+                            console.log("getTriplesInGraph: rendering canceled.");
                         }
                         return cont;
                     }
                 }
             );
-        })
-    ;
+        }
+    });
 }
 
