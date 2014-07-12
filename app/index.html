@@ -16,10 +16,18 @@
     <![endif]-->
 </head>
 <body>
-  <div>
-    <a href="#/"><img src="img/orrlogo50.png" style="vertical-align: baseline"></a>
-    <a style="color: #edf6fa" href="https://github.com/mmisw/orrv">orrv <span app-version></span></a>
-  </div>
+
+    <table style="width: 100%">
+        <tr style="vertical-align: baseline">
+            <td>
+                <a href="#/"><img src="img/orrlogo50.png" style="vertical-align: baseline"></a>
+                <span style="color: #0ebefa">MMI ORR Viewer prototype</span>
+                <a style="color: #edf6fa" target="_blank"
+                   href="https://github.com/mmisw/orrv">orrv <span app-version></span></a>
+            </td>
+        </tr>
+    </table>
+
   <div class="status" ng-show="works.any()">
       <div class="loading" ng-bind="works.any()"></div>
   </div>
