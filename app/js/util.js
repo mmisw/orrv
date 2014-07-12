@@ -82,6 +82,9 @@ var vutil = (function () {
             value = vutil.mklinks4uri(value, true);
         }
         else {
+            // \"Age of sea ice\" means...  -->  "Age of sea ice" means...
+            value = value.replace(/\\"/g, '"');
+
             value = value.replace(/^"(.*)"$/, '$1');
             // string with language tag?
             var m = value.match(/^("[^"]+")(@[A-Za-z\-]+)$/);
