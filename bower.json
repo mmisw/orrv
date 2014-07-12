@@ -1,0 +1,8 @@
+{
+  "name": "orrv",
+  "description": "orrv",
+  "version": "0.0.2",
+  "dependencies": {
+    "trNgGrid": "~1.2.0"
+  }
+}

@@ -3,4 +3,10 @@ orrv
 
 A preliminary prototype for an ORR viewer.
 
-Deploy app/ on a web server and open index.html
+```
+$ bower install
+$ node scripts/web-server.js
+```
+
+Open http://localhost:8000/app/index.html
+
