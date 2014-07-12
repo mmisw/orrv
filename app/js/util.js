@@ -20,7 +20,8 @@ var vutil = (function () {
             uri  = m[2];
             post = _.escape(m[3]);
         }
-        var link = '<a href="#/uri/' + uri + '">' + uri + '</a> '
+        var url4link = uri.replace(/#/g, "%23");
+        var link = '<a href="#/uri/' + url4link + '">' + uri + '</a> '
             + '<a class="fa fa-external-link" target="_blank" title="open directly in a new browser window" href="' + uri + '"></a>';
 
         //console.log("mklinks4uri:" +pre + "|" + link + "|" +post);
@@ -75,10 +76,36 @@ var vutil = (function () {
 
     }
 
+    function htmlifyObject(value) {
+        if (/^<([^>]*)>$/.test(value)) {
+            // it is an uri.
+            value = vutil.mklinks4uri(value, true);
+        }
+        else {
+            value = value.replace(/^"(.*)"$/, '$1');
+            // string with language tag?
+            var m = value.match(/^("[^"]+")(@[A-Za-z\-]+)$/);
+            if (m) {
+                // http://stackoverflow.com/questions/7885096/how-do-i-decode-a-string-with-escaped-unicode
+                value = '"' + decodeURIComponent(JSON.parse(m[1])) + '"' + m[2];
+            }
+            else {
+                value = vutil.mklinks4text(value);
+            }
+        }
+        return value
+    }
+
+    function htmlifyUri(uri) {
+        return vutil.mklinks4uri(uri, true);
+    }
+
     return {
         mklinks4uri:         mklinks4uri,
         mklinks4text:        mklinks4text,
         updateModelArray:    updateModelArray,
-        loadingSnippet:      '<div class="loading"> loading</div>'
+        loadingSnippet:      '<div class="loading"> loading</div>',
+        htmlifyObject:       htmlifyObject,
+        htmlifyUri:          htmlifyUri
     };
 })();

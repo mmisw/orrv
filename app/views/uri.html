@@ -1,50 +1,145 @@
 
 <div class="urititle">
-    {{uri}} <a class="icon-external-link" target="_blank" href="{{uri}}"></a>
+ URI: {{uri}} <a class="fa fa-external-link" target="_blank" href="{{uri}}"></a>
 </div>
 
-<h3>Predicates associated to this URI as subject: {{subjectData.size}}</h3>
-<table class="uri" ng-show="subjectData.size > 0">
-    <thead>
-    <tr>
-        <th ng-repeat="name in subjectData.names">
-            {{name}}
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr ng-repeat="row in subjectData.rows">
-        <td>
-            <div ng-bind-html="row[0]"></div>
-        </td>
-        <td>
-            <div ng-if="row[1].length > 1">
-                <ul>
-                    <li ng-repeat="c in row[1]">
-                        <span ng-bind-html="c"></span>
-                    </li>
-                </ul>
-            </div>
-            <div ng-if="row[1].length == 1">
-                <span ng-bind-html="row[1][0]"></span>
-            </div>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<div ng-show="subjectList.length > 0">
+    <h3>{{subjectList.length}} predicate{{subjectList.length != 1 ? "s" : ""}} associated to this URI as subject:</h3>
+
+    <div style="margin-left: 30px">
+
+        <input ng-show="subjectList.length > 10"
+                class="form-control ng-valid" type="text" ng-model="subjectListFilter" placeholder="Search">
+
+        <table ng-show="subjectList.length > 0"
+               tr-ng-grid=""
+               items="subjectList"
+               selection-mode="None"
+               filter-by="subjectListFilter"
+        >
+            <thead>
+                <tr>
+                    <th field-name="predicate" enable-filtering="false"></th>
+                    <th field-name="value"     enable-filtering="false"></th>
+                </tr>
+            </thead>
+
+            <tr>
+                <td field-name="predicate" style="white-space: nowrap;">
+                    <div ng-bind-html="gridItem.predicate"></div>
+                </td>
+                <td field-name="value">
+                    <div ng-bind-html="gridItem.value"></div>
+                </td>
+            </tr>
+
+            <tfoot style="visibility: hidden"> <tr> <td></td> </tr> </tfoot>
+
+        </table>
+    </div>
+</div>
+
+<div ng-show="subjectList.length == 0">
+    <h3> No predicates associated to this URI as subject.</h3>
+</div>
 
 <br />
 
-<h3>All subjects in the graph identified by this URI: {{subjectsInGraph.size}}</h3>
-<table class="uri" ng-show="subjectsInGraph.size > 0">
-    <tbody>
-    <tr ng-repeat="row in subjectsInGraph.rows">
-        <td ng-repeat="value in row">
-            <div ng-bind-html="value"></div>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<div ng-show="objectList.length > 0">
+    <h3>{{objectList.length}} subject/predicate{{objectList.length != 1 ? "s" : ""}} having this URI as object:</h3>
+
+    <div style="margin-left: 30px">
+    <table ng-show="objectList.length > 0"
+           tr-ng-grid=""
+           items="objectList"
+           selection-mode="None"
+           page-items="30"
+           enable-filtering="false"
+    >
+        <thead>
+            <tr>
+                <th field-name="subject"   enable-filtering="false"></th>
+                <th field-name="predicate" enable-filtering="false"></th>
+            </tr>
+
+            <tr ng-show="objectList.length >= 10">
+                <th colspan="2">
+                    <span tr-ng-grid-global-filter=""></span>
+                </th>
+            </tr>
+        </thead>
+
+        <tr>
+            <td field-name="subject" style="white-space: nowrap;">
+                <div ng-bind-html="gridItem.subject"></div>
+            </td>
+            <td field-name="predicate">
+                <div ng-bind-html="gridItem.predicate"></div>
+            </td>
+        </tr>
+
+<!--
+        <tfoot>
+            <tr>
+                <td colspan="2">
+                    <span tr-ng-grid-pager=""></span>
+                </td>
+            </tr>
+        </tfoot>
+-->
+
+    </table>
+
+    </div>
+</div>
+
+<div ng-show="objectList.length == 0">
+    <h3>No subjects/predicates having this URI as object.</h3>
+</div>
+
+
+<div ng-show="subjectsInGraph.size > 0">
+    <h3>{{subjectsInGraph.size}} subject{{subjectsInGraph.size != 1 ? "s" : ""}} having this URI as object:</h3>
+
+    <div style="margin-left: 30px">
+        <input ng-show="subjectList.length > 10"
+                class="form-control ng-valid" type="text" ng-model="subjectsInGraphFilter" placeholder="Search">
+
+
+        <table tr-ng-grid=""
+               selection-mode="None"
+               items="subjectsInGraph.rows"
+               page-items="30"
+               filter-by="subjectsInGraphFilter"
+               enable-filtering="false"
+        >
+            <thead>
+                <tr>
+                    <th field-name="subject" enable-filtering="false" enable-sorting="false"></th>
+                </tr>
+
+<!--
+                <tr>
+                    <th>
+                        <span tr-ng-grid-pager=""></span>
+                        <span tr-ng-grid-global-filter=""></span>
+                    </th>
+                </tr>
+-->
+
+            </thead>
+
+            <tr>
+                <td field-name="subject" >
+                    <div ng-bind-html="gridItem"></div>
+                </td>
+            </tr>
+
+            <!--<tfoot style="visibility: hidden"> <tr> <td></td> </tr> </tfoot>-->
+
+        </table>
+    </div>
+</div>
 
 <!--<br />
 

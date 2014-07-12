@@ -5,10 +5,12 @@
 angular.module('orrApp', [
         'ngGrid',
         'ngRoute',
+        'orrApp.data',
         'orrApp.filters',
         'orrApp.services',
         'orrApp.directives',
-        'orrApp.controllers',
+        'orrApp.main.controller',
+        'orrApp.uri.controller',
         'ngSanitize'
     ])
 
