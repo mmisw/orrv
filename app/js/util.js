@@ -76,6 +76,13 @@ var vutil = (function () {
 
     }
 
+    // http://stackoverflow.com/q/7885096/830737
+    // we could use JSON.parse instead of this regex based conversion
+    var escapedUnicodeRegex = /\\u([\d\w]{4})/gi;
+    function unescapeEscapedUnicodeRegex(escaped, val) {
+        return String.fromCharCode(parseInt(val, 16));
+    }
+
     function htmlifyObject(value) {
         if (/^<([^>]*)>$/.test(value)) {
             // it is an uri.
@@ -94,6 +101,7 @@ var vutil = (function () {
             }
             else {
                 value = vutil.mklinks4text(value);
+                value = value.replace(escapedUnicodeRegex, unescapeEscapedUnicodeRegex);
             }
         }
         return value
