@@ -12,6 +12,7 @@ var vutil = (function () {
     }
 
     function mklinks4uri(uri, possibleBrackets) {
+        uri = uri.replace(escapedUnicodeRegex, unescapeEscapedUnicodeRegex);
         var pre = "";
         var post = "";
         if (possibleBrackets !== undefined && possibleBrackets) {
