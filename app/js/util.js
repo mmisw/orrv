@@ -12,7 +12,7 @@ var vutil = (function () {
     }
 
     function mklinks4uri(uri, possibleBrackets) {
-        uri = uri.replace(escapedUnicodeRegex, unescapeEscapedUnicodeRegex);
+        uri = uri.replace(escapedUnicodeRegex, unescapeEscapedUnicode);
         var pre = "";
         var post = "";
         if (possibleBrackets !== undefined && possibleBrackets) {
@@ -80,7 +80,7 @@ var vutil = (function () {
     // http://stackoverflow.com/q/7885096/830737
     // we could use JSON.parse instead of this regex based conversion
     var escapedUnicodeRegex = /\\u([\d\w]{4})/gi;
-    function unescapeEscapedUnicodeRegex(escaped, val) {
+    function unescapeEscapedUnicode(escaped, val) {
         return String.fromCharCode(parseInt(val, 16));
     }
 
@@ -102,7 +102,7 @@ var vutil = (function () {
             }
             else {
                 value = vutil.mklinks4text(value);
-                value = value.replace(escapedUnicodeRegex, unescapeEscapedUnicodeRegex);
+                value = value.replace(escapedUnicodeRegex, unescapeEscapedUnicode);
             }
         }
         return value
