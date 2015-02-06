@@ -1,6 +1,6 @@
 var orrvConfig = {
 
-    sparqlEndpoint: 'http://mmisw.org/sparql',
+    sparqlEndpoint: 'https://mmisw.org/sparql',
 
     onlyVisible: false
 };
